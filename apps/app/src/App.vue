@@ -152,7 +152,7 @@ const handlePreviewScroll = (position: {
 };
 </script>
 <style scoped>
-/deep/ .markdown-editor__textarea {
+:deep(.markdown-editor__textarea) {
   height: 100vh;
   width: 100%;
 }

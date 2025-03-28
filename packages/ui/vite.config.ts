@@ -14,7 +14,7 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      external: ["vue", "@mini-markdown/core", "highlight.js/styles/*.css"],
+      external: ["vue", "@mini-markdown/core", "highlight.js/styles/*.css", /\.test\.ts$/],
       output: {
         globals: {
           vue: "Vue",
