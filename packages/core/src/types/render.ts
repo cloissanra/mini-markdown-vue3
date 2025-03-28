@@ -31,4 +31,8 @@ export interface MarkdownResult {
    * 原始Markdown文本
    */
   text: string;
+  /**
+   * 目录结构
+   */
+  toc?: { level: number; text: string; id: string }[];
 }

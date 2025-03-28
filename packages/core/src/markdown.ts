@@ -42,7 +42,10 @@ function configureMarked(options: MarkdownOptions = {}): void {
 /**
  * 将Markdown文本渲染为HTML
  */
-export function renderMarkdown(text: string, options: MarkdownOptions = {}): MarkdownResult {
+export function renderMarkdown(
+  text: string,
+  options: MarkdownOptions = {},
+): MarkdownResult {
   const mergedOptions = { ...defaultOptions, ...options };
 
   // 配置marked
@@ -60,7 +63,9 @@ export function renderMarkdown(text: string, options: MarkdownOptions = {}): Mar
 /**
  * 获取Markdown文本的目录结构
  */
-export function extractToc(text: string): { level: number; text: string; id: string }[] {
+export function extractToc(
+  text: string,
+): { level: number; text: string; id: string }[] {
   const headingRegex = /^(#{1,6})\s+(.+)$/gm;
   const toc: { level: number; text: string; id: string }[] = [];
 

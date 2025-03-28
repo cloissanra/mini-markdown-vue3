@@ -12,7 +12,7 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      external: ["marked", "highlight.js"],
+      external: ["marked", "highlight.js", /\.test\.ts$/],
       output: {
         globals: {
           marked: "marked",
