@@ -16,7 +16,6 @@ import { MarkdownOptions } from "@/types/render";
  */
 const defaultOptions: MarkdownOptions = {
   highlight: true,
-  autoScroll: true,
 };
 
 /**

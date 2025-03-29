@@ -5,10 +5,6 @@ export interface MarkdownOptions {
   highlight?: boolean;
 
   /**
-   * 是否启用自动滚动
-   */
-  autoScroll?: boolean;
-  /**
    * 自定义渲染器
    */
   renderer?: Record<string, (text: string) => string>;

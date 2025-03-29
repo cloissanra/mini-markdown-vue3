@@ -14,7 +14,7 @@ let ast = markdown2AST(testMarkdown);
 const testAstPath = path.resolve(__dirname, "test.json");
 fs.writeFileSync(testAstPath, JSON.stringify(ast, null, 2), "utf-8");
 // 生成HTML并保存到test.html
-const html = getHtmlTemplate(markdown2AST(testMarkdown));
+const html = getHtmlTemplate(renderMarkdown(ast));
 fs.writeFileSync(path.resolve(__dirname, "./test.html"), html);
 
 /**
