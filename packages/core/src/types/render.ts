@@ -1,5 +1,3 @@
-import { MarkedOptions } from "marked";
-
 export interface MarkdownOptions {
   /**
    * 是否启用语法高亮
@@ -10,15 +8,10 @@ export interface MarkdownOptions {
    * 是否启用自动滚动
    */
   autoScroll?: boolean;
-
   /**
    * 自定义渲染器
    */
   renderer?: Record<string, (text: string) => string>;
-}
-
-export interface MyMarkedOptions extends MarkedOptions {
-  highlight?: (code: string, lang: string) => string;
 }
 
 export interface MarkdownResult {

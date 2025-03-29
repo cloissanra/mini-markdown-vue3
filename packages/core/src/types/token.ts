@@ -18,17 +18,6 @@ export interface HeadingNode extends Node {
   children: InlineNode[];
 }
 
-// 加粗
-export interface BoldNode extends Node {
-  type: "bold";
-  children: InlineNode[];
-}
-
-// 斜体
-export interface ItalicNode extends Node {
-  type: "italic";
-  children: InlineNode[];
-}
 
 // 下划线
 export interface UnderlineNode extends Node {
@@ -36,11 +25,6 @@ export interface UnderlineNode extends Node {
   children: InlineNode[];
 }
 
-// 删除线
-export interface StrikethroughNode extends Node {
-  type: "strikethrough";
-  children: InlineNode[];
-}
 
 // 引用
 export interface BlockquoteNode extends Node {
@@ -61,13 +45,13 @@ export interface LinkNode extends Node {
   children: InlineNode[];
 }
 
-// 删除线节点
+// 删除线
 export interface DeleteNode extends Node {
   type: "delete";
   children: InlineNode[];
 }
 
-// 下划线节点（HTML 标签）
+// 下划线（HTML 标签）
 export interface UnderlineNode extends Node {
   type: "underline";
   children: InlineNode[];
@@ -125,11 +109,8 @@ export interface ParagraphNode extends Node {
 // 行内节点（可以嵌套在段落、标题等中）
 export type InlineNode =
   | TextNode
-  | BoldNode
-  | ItalicNode
   | DeleteNode
   | UnderlineNode
-  | StrikethroughNode
   | LinkNode
   | EmphasisNode
   | StrongNode

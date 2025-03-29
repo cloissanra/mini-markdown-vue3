@@ -32,6 +32,26 @@
     },
     {
       "type": "heading",
+      "depth": 1,
+      "children": [
+        {
+          "type": "text",
+          "value": "一级标题"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "children": [
+        {
+          "type": "text",
+          "value": "二级标题"
+        }
+      ]
+    },
+    {
+      "type": "heading",
       "depth": 3,
       "children": [
         {
@@ -100,19 +120,6 @@
               "value": "这是加粗文本"
             }
           ]
-        },
-        {
-          "type": "text",
-          "value": " 和 "
-        },
-        {
-          "type": "strong",
-          "children": [
-            {
-              "type": "text",
-              "value": "另一种加粗方式"
-            }
-          ]
         }
       ]
     },
@@ -125,19 +132,6 @@
             {
               "type": "text",
               "value": "这是斜体文本"
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "value": " 和 "
-        },
-        {
-          "type": "emphasis",
-          "children": [
-            {
-              "type": "text",
-              "value": "另一种斜体方式"
             }
           ]
         }
@@ -155,24 +149,6 @@
                 {
                   "type": "text",
                   "value": "这是加粗斜体"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "value": " 和 "
-        },
-        {
-          "type": "strong",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "另一种加粗斜体方式"
                 }
               ]
             }
@@ -252,13 +228,11 @@
       ]
     },
     {
+      "type": "thematicBreak"
+    },
+    {
       "type": "paragraph",
-      "children": [
-        {
-          "type": "text",
-          "value": "---"
-        }
-      ]
+      "children": []
     },
     {
       "type": "heading",
@@ -274,8 +248,30 @@
       "type": "paragraph",
       "children": [
         {
+          "type": "link",
+          "url": "https://github.com",
+          "title": "",
+          "children": [
+            {
+              "type": "text",
+              "value": "这是一个链接"
+            }
+          ]
+        },
+        {
           "type": "text",
-          "value": "[这是一个链接](https://github.com)\n[带标题的链接](https://github.com \"GitHub\")"
+          "value": "\r\n"
+        },
+        {
+          "type": "link",
+          "url": "https://github.com",
+          "title": "GitHub",
+          "children": [
+            {
+              "type": "text",
+              "value": "带标题的链接"
+            }
+          ]
         }
       ]
     },
@@ -387,20 +383,15 @@
       "type": "paragraph",
       "children": [
         {
-          "type": "text",
-          "value": "`这是内联代码`"
+          "type": "inlineCode",
+          "value": "This is inline code."
         }
       ]
     },
     {
       "type": "codeBlock",
       "language": "javascript",
-      "value": "// 这是代码块\nfunction hello() {\n  console.log(\"Hello, World!\");\n}"
-    },
-    {
-      "type": "codeBlock",
-      "language": "typescript",
-      "value": "// 带语言高亮的代码块\ninterface User {\n  name: string;\n  age: number;\n}"
+      "value": "// 这是代码块\r\nfunction hello() {\r\n  console.log(\"Hello, World!\");\r\n}"
     },
     {
       "type": "heading",
@@ -417,7 +408,7 @@
       "children": [
         {
           "type": "text",
-          "value": "这是第一段文字。\n这行与上面的行在同一段落中。"
+          "value": "这是第一段文字。\r\n这行与上面的行在同一段落中。"
         }
       ]
     },

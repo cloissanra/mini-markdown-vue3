@@ -10,6 +10,7 @@ import type {
   UnorderedListNode,
   OrderedListNode,
   InlineNode,
+  LinkNode,
 } from "@/types/index";
 
 /**
@@ -69,6 +70,14 @@ export default function markdown2AST(text: string): RootNode {
       rootNode.children.push(codeBlockNode);
       i = j + 1; // 跳过结束的 ```
       continue;
+    }
+
+    // 解析分隔线
+    if (line === '---') {
+      rootNode.children.push({
+        type: "thematicBreak",
+      });
+      i++;
     }
 
     // 解析引用块
@@ -179,7 +188,11 @@ export default function markdown2AST(text: string): RootNode {
         !lines[j].trim().match(/^[-*+]\s/) &&
         !lines[j].trim().match(/^\d+\.\s/)
       ) {
-        paragraph += lines[j] + "\n";
+        // 保留原始的换行符
+        if (j > i) {
+          paragraph += '\n';
+        }
+        paragraph += lines[j];
         j++;
       }
 
@@ -213,6 +226,48 @@ function parseInline(text: string): InlineNode[] {
   let i = 0;
 
   while (i < text.length) {
+    // 检查链接 [text](url "title")
+    if (text[i] === '[') {
+      if (currentText) {
+        result.push({ type: "text", value: currentText });
+        currentText = "";
+      }
+
+      const linkTextEnd = text.indexOf(']', i);
+      if (linkTextEnd !== -1 && text[linkTextEnd + 1] === '(') {
+        const linkTextStart = i + 1;
+        const linkText = text.substring(linkTextStart, linkTextEnd);
+
+        const urlStart = linkTextEnd + 2;
+        let urlEnd = text.indexOf(')', urlStart);
+
+        if (urlEnd !== -1) {
+          let url = '';
+          let title = '';
+
+          // 检查是否有标题
+          const urlContent = text.substring(urlStart, urlEnd);
+          const titleMatch = urlContent.match(/^([^\s"]+)(?:\s+"([^"]+)")?$/);
+
+          if (titleMatch) {
+            url = titleMatch[1];
+            title = titleMatch[2] || '';
+
+            const linkNode: LinkNode = {
+              type: "link",
+              url: url,
+              title: title,
+              children: parseInline(linkText),
+            };
+
+            result.push(linkNode);
+            i = urlEnd + 1;
+            continue;
+          }
+        }
+      }
+    }
+
     // 检查删除线 ~~text~~
     if (text.substring(i, i + 2) === "~~") {
       if (currentText) {
@@ -281,10 +336,11 @@ function parseInline(text: string): InlineNode[] {
         if (text[j] === marker && text[j - 1] !== "\\" && text[j + 1] !== marker) {
           // 提取斜体内容并递归解析
           const content = text.substring(startPos, j);
-          result.push({
+          const emphasisNode: EmphasisNode = {
             type: "emphasis",
             children: parseInline(content),
-          });
+          };
+          result.push(emphasisNode);
 
           i = j + 1;
           break;
@@ -309,12 +365,36 @@ function parseInline(text: string): InlineNode[] {
       if (endPos !== -1) {
         // 提取粗体内容并递归解析
         const content = text.substring(startPos, endPos);
-        result.push({
+        const strongNode: StrongNode = {
           type: "strong",
           children: parseInline(content),
-        });
+        };
+        result.push(strongNode);
 
         i = endPos + 2;
+        continue;
+      }
+    }
+
+    // 检查内联代码
+    if (text[i] === '`') {
+      if (currentText) {
+        result.push({ type: "text", value: currentText });
+        currentText = "";
+      }
+
+      const startPos = i + 1;
+      const endPos = text.indexOf("`", startPos);
+
+      if (endPos !== -1) {
+        // 提取代码内容并递归解析
+        const content = text.substring(startPos, endPos);
+        result.push({
+          type: "inlineCode",
+          value: content,
+        });
+
+        i = endPos + 1;
         continue;
       }
     }

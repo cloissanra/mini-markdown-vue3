@@ -9,7 +9,19 @@
     "test": "pnpm --filter \"@mini-markdown/*\" test",
     "lint": "pnpm --filter \"@mini-markdown/*\" lint  --fix --no-warn-ignored",
     "format": "prettier --write \"**/*.{js,ts,vue,json}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev:core": "pnpm --filter @mini-markdown/core dev",
+    "dev:ui": "pnpm --filter @mini-markdown/ui dev",
+    "dev:app": "pnpm --filter @mini-markdown/app dev",
+    "build:core": "pnpm --filter @mini-markdown/core build",
+    "build:ui": "pnpm --filter @mini-markdown/ui build",
+    "build:app": "pnpm --filter @mini-markdown/app build",
+    "test:core": "pnpm --filter @mini-markdown/core test",
+    "test:ui": "pnpm --filter @mini-markdown/ui test",
+    "test:app": "pnpm --filter @mini-markdown/app test",
+    "lint:core": "pnpm --filter @mini-markdown/core lint --fix --no-warn-ignored",
+    "lint:ui": "pnpm --filter @mini-markdown/ui lint --fix --no-warn-ignored",
+    "lint:app": "pnpm --filter @mini-markdown/app lint --fix --no-warn-ignored"
   },
   "keywords": [
     "markdown",
@@ -22,7 +34,7 @@
   "packageManager": "pnpm@10.6.3",
   "devDependencies": {
     "@commitlint/cli": "^18.6.0",
-    "@commitlint/config-conventional": "^19.8.0",
+    "@commitlint/config-conventional": "17.8.0",
     "@eslint/js": "^9.22.0",
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
