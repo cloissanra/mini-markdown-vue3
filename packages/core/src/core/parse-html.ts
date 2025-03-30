@@ -9,7 +9,7 @@ import {
   ListItemNode,
   InlineNode
 } from "@/types/index";
-import { MarkdownOptions } from "@/types/render";
+import { MarkdownOptions, TocItem } from "@/types/render";
 
 /**
  * 默认Markdown选项
@@ -19,38 +19,42 @@ const defaultOptions: MarkdownOptions = {
 };
 
 /**
- * 将AST树渲染为HTML
+ * 将AST树渲染为HTML，返回html和toc
  */
-export default function renderMarkdown(rootNode: RootNode, options: MarkdownOptions = defaultOptions): string {
+export default function renderMarkdown(
+  rootNode: RootNode,
+  options: MarkdownOptions = defaultOptions
+): { html: string; toc: TocItem[] } {
   let html = '';
+  const toc: TocItem[] = [];
 
   // 遍历根节点的子节点
   for (const node of rootNode.children) {
-    html += renderNode(node, options);
+    html += renderNode(node, options, toc);
   }
 
-  return html;
+  return { html, toc };
 }
 
 /**
  * 渲染单个节点
  */
-function renderNode(node: any, options: MarkdownOptions): string {
+function renderNode(node: any, options: MarkdownOptions, toc: TocItem[]): string {
   switch (node.type) {
     case 'heading':
-      return renderHeading(node);
+      return renderHeading(node, toc);
     case 'paragraph':
       return renderParagraph(node);
     case 'thematicBreak':
       return renderThematicBreakNode();
     case 'blockquote':
-      return renderBlockquote(node, options);
+      return renderBlockquote(node, options, toc);
     case 'codeBlock':
       return renderCodeBlock(node, options);
     case 'unorderedList':
-      return renderUnorderedList(node, options);
+      return renderUnorderedList(node, options, toc);
     case 'orderedList':
-      return renderOrderedList(node, options);
+      return renderOrderedList(node, options, toc);
     default:
       return '';
   }
@@ -59,10 +63,27 @@ function renderNode(node: any, options: MarkdownOptions): string {
 /**
  * 渲染标题
  */
-function renderHeading(node: HeadingNode): string {
+function renderHeading(node: HeadingNode, toc: TocItem[]): string {
   const level = node.depth;
   const content = renderInlineContent(node.children);
-  return `<h${level}>${content}</h${level}>\n`;
+
+  // 提取标题文本用于生成ID和TOC
+  const headingText = node.children.map(child => {
+    if (child.type === 'text') return child.value;
+    return '';
+  }).join('').trim();
+
+  // 生成唯一ID，使用标题级别和TOC数组长度
+  const headingId = `heading-${level}-${toc.length}`;
+
+  // 将标题信息添加到TOC数组
+  toc.push({
+    id: headingId,
+    level,
+    text: headingText
+  });
+
+  return `<h${level} id="${headingId}">${content}</h${level}>\n`;
 }
 
 /**
@@ -77,16 +98,16 @@ function renderParagraph(node: ParagraphNode): string {
  * 渲染分割线
  */
 function renderThematicBreakNode(): string {
-  return `<hr>`;
+  return `<hr>\n`;
 }
 
 /**
  * 渲染引用块
  */
-function renderBlockquote(node: BlockquoteNode, options: MarkdownOptions): string {
+function renderBlockquote(node: BlockquoteNode, options: MarkdownOptions, toc: TocItem[]): string {
   let content = '';
   for (const child of node.children) {
-    content += renderNode(child, options);
+    content += renderNode(child, options, toc);
   }
   return `<blockquote>${content}</blockquote>\n`;
 }
@@ -108,10 +129,10 @@ function renderCodeBlock(node: CodeBlockNode, options: MarkdownOptions): string 
 /**
  * 渲染无序列表
  */
-function renderUnorderedList(node: UnorderedListNode, options: MarkdownOptions): string {
+function renderUnorderedList(node: UnorderedListNode, options: MarkdownOptions, toc: TocItem[]): string {
   let items = '';
   for (const item of node.items) {
-    items += renderListItem(item, options);
+    items += renderListItem(item, options, toc);
   }
   return `<ul>${items}</ul>\n`;
 }
@@ -119,10 +140,10 @@ function renderUnorderedList(node: UnorderedListNode, options: MarkdownOptions):
 /**
  * 渲染有序列表
  */
-function renderOrderedList(node: OrderedListNode, options: MarkdownOptions): string {
+function renderOrderedList(node: OrderedListNode, options: MarkdownOptions, toc: TocItem[]): string {
   let items = '';
   for (const item of node.items) {
-    items += renderListItem(item, options);
+    items += renderListItem(item, options, toc);
   }
   return `<ol>${items}</ol>\n`;
 }
@@ -130,10 +151,12 @@ function renderOrderedList(node: OrderedListNode, options: MarkdownOptions): str
 /**
  * 渲染列表项
  */
-function renderListItem(node: ListItemNode, _options: MarkdownOptions): string {
+function renderListItem(node: ListItemNode, options: MarkdownOptions, toc: TocItem[]): string {
   let content = '';
   if (node.children) {
-    content = renderInlineContent(node.children);
+    for (const child of node.children) {
+      content += renderInlineNode(child);
+    }
   }
   return `<li>${content}</li>`;
 }
@@ -165,7 +188,7 @@ function renderInlineNode(node: InlineNode): string {
     case 'underline':
       return `<u>${renderInlineContent(node.children)}</u>`;
     case 'inlineCode':
-      return `<code class="inline-code">${node.value}</code>`;
+      return `<code class="inline-code">${escapeHtml(node.value)}</code>`;
     case 'link':
       const title = node.title ? ` title="${escapeHtml(node.title)}"` : '';
       return `<a href="${escapeHtml(node.url)}"${title}>${renderInlineContent(node.children)}</a>`;

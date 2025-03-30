@@ -23,6 +23,8 @@ export default function markdown2AST(text: string): RootNode {
     children: [],
   };
 
+  if (text.length === 0) return rootNode;
+
   // 按行分割Markdown文本
   const lines = text.split("\n");
 

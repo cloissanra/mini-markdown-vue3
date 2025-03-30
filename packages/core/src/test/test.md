@@ -67,6 +67,7 @@ _这是斜体文本_
 // 这是代码块
 function hello() {
   console.log("Hello, World!");
+  console.log("Hello, World2!");
 }
 ```
 

@@ -4,7 +4,6 @@
   "private": true,
   "description": "Vue 3 Markdown编辑器，支持实时预览和语法高亮",
   "scripts": {
-    "dev": "pnpm --filter @mini-markdown/app dev",
     "build": "pnpm --filter \"@mini-markdown/*\" build",
     "test": "pnpm --filter \"@mini-markdown/*\" test",
     "lint": "pnpm --filter \"@mini-markdown/*\" lint  --fix --no-warn-ignored",
@@ -12,16 +11,12 @@
     "prepare": "husky",
     "dev:core": "pnpm --filter @mini-markdown/core dev",
     "dev:ui": "pnpm --filter @mini-markdown/ui dev",
-    "dev:app": "pnpm --filter @mini-markdown/app dev",
     "build:core": "pnpm --filter @mini-markdown/core build",
     "build:ui": "pnpm --filter @mini-markdown/ui build",
-    "build:app": "pnpm --filter @mini-markdown/app build",
     "test:core": "pnpm --filter @mini-markdown/core test",
     "test:ui": "pnpm --filter @mini-markdown/ui test",
-    "test:app": "pnpm --filter @mini-markdown/app test",
     "lint:core": "pnpm --filter @mini-markdown/core lint --fix --no-warn-ignored",
-    "lint:ui": "pnpm --filter @mini-markdown/ui lint --fix --no-warn-ignored",
-    "lint:app": "pnpm --filter @mini-markdown/app lint --fix --no-warn-ignored"
+    "lint:ui": "pnpm --filter @mini-markdown/ui lint --fix --no-warn-ignored"
   },
   "keywords": [
     "markdown",

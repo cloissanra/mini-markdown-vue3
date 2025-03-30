@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { extractToc, marked } from "../index";
+import { marked } from "../index";
 import markdown2AST from "../core/parse-ast";
 import renderMarkdown from "../core/parse-html";
 import * as fs from "fs";
@@ -14,8 +14,8 @@ let ast = markdown2AST(testMarkdown);
 const testAstPath = path.resolve(__dirname, "test.json");
 fs.writeFileSync(testAstPath, JSON.stringify(ast, null, 2), "utf-8");
 // 生成HTML并保存到test.html
-const html = getHtmlTemplate(renderMarkdown(ast));
-fs.writeFileSync(path.resolve(__dirname, "./test.html"), html);
+const { html, toc } = renderMarkdown(ast);
+fs.writeFileSync(path.resolve(__dirname, "./test.html"), getHtmlTemplate(html));
 
 /**
  * 测试marked函数
@@ -27,33 +27,32 @@ describe("Core Package", () => {
   it("should render markdown to HTML", () => {
     const markdown = "# Hello World";
     const result = marked(markdown).html;
-    expect(result).toContain("<h1>Hello World</h1>");
+    expect(result).toContain('<h1 id="heading-1-0">Hello World</h1>');
   });
 
   /**
    * 测试提取目录 extractToc
    */
   it("should extract table of contents from markdown", () => {
-    const toc = extractToc(testMarkdown);
     console.log(toc);
     expect(toc).toEqual([
-      { level: 1, text: "Markdown 示例文档", id: "title-1" },
-      { level: 2, text: "标题示例", id: "subtitle-1" },
-      { level: 1, text: "一级标题", id: "title-2" },
-      { level: 2, text: "二级标题", id: "subtitle-2" },
-      { level: 3, text: "三级标题", id: "heading-3-1" },
-      { level: 4, text: "四级标题", id: "heading-4-1" },
-      { level: 5, text: "五级标题", id: "heading-5-1" },
-      { level: 6, text: "六级标题", id: "heading-6-1" },
-      { level: 2, text: "文本格式", id: "subtitle-3" },
-      { level: 2, text: "引用", id: "subtitle-4" },
-      { level: 2, text: "分隔线", id: "subtitle-5" },
-      { level: 2, text: "链接", id: "subtitle-6" },
-      { level: 2, text: "列表", id: "subtitle-7" },
-      { level: 3, text: "无序列表", id: "heading-3-2" },
-      { level: 3, text: "有序列表", id: "heading-3-3" },
-      { level: 2, text: "代码", id: "subtitle-8" },
-      { level: 2, text: "段落", id: "subtitle-9" },
+      { id: 'heading-1-0', level: 1, text: 'Markdown 示例文档' },
+      { id: 'heading-2-1', level: 2, text: '标题示例' },
+      { id: 'heading-1-2', level: 1, text: '一级标题' },
+      { id: 'heading-2-3', level: 2, text: '二级标题' },
+      { id: 'heading-3-4', level: 3, text: '三级标题' },
+      { id: 'heading-4-5', level: 4, text: '四级标题' },
+      { id: 'heading-5-6', level: 5, text: '五级标题' },
+      { id: 'heading-6-7', level: 6, text: '六级标题' },
+      { id: 'heading-2-8', level: 2, text: '文本格式' },
+      { id: 'heading-2-9', level: 2, text: '引用' },
+      { id: 'heading-2-10', level: 2, text: '分隔线' },
+      { id: 'heading-2-11', level: 2, text: '链接' },
+      { id: 'heading-2-12', level: 2, text: '列表' },
+      { id: 'heading-3-13', level: 3, text: '无序列表' },
+      { id: 'heading-3-14', level: 3, text: '有序列表' },
+      { id: 'heading-2-15', level: 2, text: '代码' },
+      { id: 'heading-2-16', level: 2, text: '段落' }
     ]);
   });
 });

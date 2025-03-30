@@ -10,6 +10,15 @@ export interface MarkdownOptions {
   renderer?: Record<string, (text: string) => string>;
 }
 
+/**
+ * 标题项
+ */
+export interface TocItem {
+  id: string;
+  level: number;
+  text: string;
+}
+
 export interface MarkdownResult {
   /**
    * 渲染后的HTML
@@ -23,5 +32,5 @@ export interface MarkdownResult {
   /**
    * 目录结构
    */
-  toc?: { level: number; text: string; id: string }[];
+  toc?: TocItem[];
 }

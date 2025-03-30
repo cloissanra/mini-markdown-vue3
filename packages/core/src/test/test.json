@@ -391,7 +391,7 @@
     {
       "type": "codeBlock",
       "language": "javascript",
-      "value": "// 这是代码块\r\nfunction hello() {\r\n  console.log(\"Hello, World!\");\r\n}"
+      "value": "// 这是代码块\r\nfunction hello() {\r\n  console.log(\"Hello, World!\");\r\n  console.log(\"Hello, World2!\");\r\n}"
     },
     {
       "type": "heading",
