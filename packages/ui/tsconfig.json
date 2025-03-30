@@ -6,11 +6,12 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@mini-markdown/core": ["../core/src"],
+      "@mini-markdown/core/*": ["../core/src/*"]
     },
     "emitDeclarationOnly": true,
     "types": ["vite/client", "vue"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "env.d.ts"],
-  "references": [{ "path": "../core" }]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"]
 }

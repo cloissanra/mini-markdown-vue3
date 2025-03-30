@@ -1,17 +1,23 @@
 <template>
-  <div class="markdown-preview" ref="previewRef">
-    <div class="markdown-preview__content" v-html="renderedHtml"></div>
+  <div class="markdown-preview-container">
+    <div class="markdown-preview" ref="previewRef">
+      <div class="markdown-preview__content" v-html="html"></div>
+    </div>
+    <MarkdownToc :toc="toc" :activeId="activeId" class="markdown-toc" v-if="showToc && toc.length > 0" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { renderMarkdown } from "@mini-markdown/core";
-import "highlight.js/styles/github.css";
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
+import MarkdownToc from './MarkdownToc.vue';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
+import { marked } from '@mini-markdown/core';
 
 const props = defineProps<{
-  markdown: string;
+  content: string;
   autoScroll?: boolean;
+  showToc?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -19,48 +25,71 @@ const emit = defineEmits<{
 }>();
 
 const previewRef = ref<HTMLDivElement | null>(null);
+const html = ref('');
+const toc = ref([]);
+const activeId = ref<string>();
 
-// 渲染Markdown为HTML
-const renderedHtml = computed(() => {
-  const result = renderMarkdown(props.markdown, {
-    highlight: true,
-  });
-  return result.html;
-});
+// html滚动时高亮对应的标题
+const findCurrentLinkId = () => {
+  let minDistance = Infinity;
+  let currentId = null;
 
-// 监听滚动事件
-const handleScroll = () => {
-  if (!previewRef.value || !props.autoScroll) return;
+  const container = previewRef.value;
+  if (!container) return;
+  const containerRect = container.getBoundingClientRect();
+  const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  for (const heading of headings) {
+    const headingRect = heading.getBoundingClientRect();
+    const distance = headingRect.top - containerRect.top;
 
-  const { scrollTop, scrollHeight, clientHeight } = previewRef.value;
-  emit("scroll", { scrollTop, scrollHeight, clientHeight });
-};
-
-// 设置预览的滚动位置
-const setScrollPosition = (position: number) => {
-  if (previewRef.value) {
-    previewRef.value.scrollTop = position;
+    // 我们寻找距离顶部最近但不为负的标题（即已经在视图内的标题）
+    // 如果标题在视图上方（距离为负），我们选择最接近的一个
+    if ((distance >= 0 && distance < minDistance) ||
+      (distance < 0 && Math.abs(distance) < Math.abs(minDistance) && minDistance < 0)) {
+      minDistance = distance;
+      currentId = heading.id;
+    } else if (distance < 0 && minDistance > 0) {
+      // 如果当前标题在视图上方，而之前找到的在视图下方，优先选择上方的
+      minDistance = distance;
+      currentId = heading.id;
+    }
   }
-};
+  activeId.value = currentId;
+}
 
-// 计算滚动比例
-const calculateScrollRatio = (editorScroll: {
-  scrollTop: number;
-  scrollHeight: number;
-  clientHeight: number;
-}) => {
-  if (!previewRef.value) return;
+onMounted(() => {
+  if (previewRef.value) {
+    previewRef.value.addEventListener('scroll', findCurrentLinkId);
+    findCurrentLinkId();
+  }
+})
 
-  const { scrollTop, scrollHeight, clientHeight } = editorScroll;
-  const editorScrollRatio = scrollTop / (scrollHeight - clientHeight);
 
-  const previewScrollHeight = previewRef.value.scrollHeight;
-  const previewClientHeight = previewRef.value.clientHeight;
 
-  const previewScrollTop = editorScrollRatio * (previewScrollHeight - previewClientHeight);
-  setScrollPosition(previewScrollTop);
-};
-
+// 监听内容变化
+watch(
+  () => props.content,
+  (newVal) => {
+    if (!newVal) return;
+    const res = marked(props.content, {
+      highlight: true
+    });
+    html.value = res.html;
+    toc.value = res.toc;
+    nextTick(() => {
+      // 应用语法高亮
+      if (previewRef.value) {
+        const codeBlocks = previewRef.value.querySelectorAll('pre code');
+        codeBlocks.forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }
+    });
+  },
+  {
+    immediate: true
+  }
+)
 // 监听滚动事件
 watch(
   () => previewRef.value,
@@ -69,25 +98,35 @@ watch(
       newValue.addEventListener("scroll", handleScroll);
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
-
-// 暴露方法给父组件
-defineExpose({
-  setScrollPosition,
-  calculateScrollRatio,
-});
 </script>
 
 <style scoped>
-.markdown-preview {
+.markdown-preview-container {
+  position: relative;
+  display: flex;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
-  padding: 1rem;
+  padding: 0 8px;
   border: 1px solid #e2e8f0;
   border-radius: 0.375rem;
   background-color: #ffffff;
+  overflow: hidden;
+}
+
+.markdown-preview {
+  flex: 3;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.markdown-toc {
+  flex: 1;
+  max-width: 250px;
+  height: 100%;
+  padding: 1rem;
+  overflow-y: auto;
 }
 
 .markdown-preview__content {
@@ -106,27 +145,8 @@ defineExpose({
   color: #334155;
 }
 
-.markdown-preview__content :deep(h1),
-.markdown-preview__content :deep(h2),
-.markdown-preview__content :deep(h3),
-.markdown-preview__content :deep(h4),
-.markdown-preview__content :deep(h5),
-.markdown-preview__content :deep(h6) {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.markdown-preview__content :deep(h1) {
-  font-size: 2em;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 0.3em;
-}
-
 .markdown-preview__content :deep(h2) {
   font-size: 1.5em;
-  border-bottom: 1px solid #e2e8f0;
   padding-bottom: 0.3em;
 }
 

@@ -1,12 +1,7 @@
 <template>
   <div class="markdown-editor">
-    <textarea
-      ref="editorRef"
-      class="markdown-editor__textarea"
-      :value="modelValue"
-      @input="handleInput"
-      @scroll="handleScroll"
-    ></textarea>
+    <textarea ref="editorRef" class="markdown-editor__textarea" :value="modelValue" @input="handleInput"
+      @scroll="handleScroll"></textarea>
   </div>
 </template>
 
