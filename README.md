@@ -1,13 +1,13 @@
 # Mini Markdown Vue
 
-一个基于Vue 3和Monorepo架构的Markdown编辑器，支持实时预览和语法高亮。
+一个基于Vue 3和Monorepo架构的Markdown编辑器，支持实时预览和标题滚动高亮。
 
 ## 功能特点
 
 - **实时预览**：边写边看，所见即所得
 - **语法高亮**：支持代码块语法高亮
 - **目录导航**：自动生成文档目录
-- **同步滚动**：编辑和预览区域同步滚动
+- **同步滚动**：预览区域和目录同步滚动
 
 ## 技术栈
 
@@ -24,8 +24,6 @@
 
 ```
 mini-markdown-vue/
-├── apps/                  # 应用
-│   └── app/               # 主应用
 ├── packages/              # 包
 │   ├── core/              # 核心功能
 │   └── ui/                # UI组件
@@ -79,13 +77,6 @@ cd packages/ui
 pnpm build
 ```
 
-#### 构建主应用
-
-```bash
-cd apps/app
-pnpm build
-```
-
 ### 开发
 
 ```bash
@@ -96,12 +87,6 @@ pnpm dev
 
 ```bash
 pnpm test
-```
-
-### 代码检查
-
-```bash
-pnpm lint
 ```
 
 ## 许可证
