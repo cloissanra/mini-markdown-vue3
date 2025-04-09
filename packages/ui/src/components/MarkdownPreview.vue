@@ -3,16 +3,21 @@
     <div class="markdown-preview" ref="previewRef">
       <div class="markdown-preview__content" v-html="html"></div>
     </div>
-    <MarkdownToc :toc="toc" :activeId="activeId" class="markdown-toc" v-if="showToc && toc.length > 0" />
+    <MarkdownToc
+      :toc="toc"
+      :activeId="activeId"
+      class="markdown-toc"
+      v-if="showToc && toc.length > 0"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import MarkdownToc from './MarkdownToc.vue';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css';
-import { marked } from '@mini-markdown/core';
+import { ref, watch, onMounted, nextTick } from "vue";
+import MarkdownToc from "./MarkdownToc.vue";
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+import { marked } from "@mini-markdown/core";
 
 const props = defineProps<{
   content: string;
@@ -25,9 +30,9 @@ const emit = defineEmits<{
 }>();
 
 const previewRef = ref<HTMLDivElement | null>(null);
-const html = ref('');
+const html = ref("");
 const toc = ref([]);
-const activeId = ref<string>();
+const activeId = ref<string>("");
 
 // html滚动时高亮对应的标题
 const findCurrentLinkId = () => {
@@ -37,15 +42,17 @@ const findCurrentLinkId = () => {
   const container = previewRef.value;
   if (!container) return;
   const containerRect = container.getBoundingClientRect();
-  const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  const headings = container.querySelectorAll("h1, h2, h3, h4, h5, h6");
   for (const heading of headings) {
     const headingRect = heading.getBoundingClientRect();
     const distance = headingRect.top - containerRect.top;
 
     // 我们寻找距离顶部最近但不为负的标题（即已经在视图内的标题）
     // 如果标题在视图上方（距离为负），我们选择最接近的一个
-    if ((distance >= 0 && distance < minDistance) ||
-      (distance < 0 && Math.abs(distance) < Math.abs(minDistance) && minDistance < 0)) {
+    if (
+      (distance >= 0 && distance < minDistance) ||
+      (distance < 0 && Math.abs(distance) < Math.abs(minDistance) && minDistance < 0)
+    ) {
       minDistance = distance;
       currentId = heading.id;
     } else if (distance < 0 && minDistance > 0) {
@@ -54,17 +61,17 @@ const findCurrentLinkId = () => {
       currentId = heading.id;
     }
   }
-  activeId.value = currentId;
-}
+  activeId.value = currentId as string;
+};
+
+const handleScroll = () => {};
 
 onMounted(() => {
   if (previewRef.value) {
-    previewRef.value.addEventListener('scroll', findCurrentLinkId);
+    previewRef.value.addEventListener("scroll", findCurrentLinkId);
     findCurrentLinkId();
   }
-})
-
-
+});
 
 // 监听内容变化
 watch(
@@ -72,24 +79,24 @@ watch(
   (newVal) => {
     if (!newVal) return;
     const res = marked(props.content, {
-      highlight: true
+      highlight: true,
     });
     html.value = res.html;
     toc.value = res.toc;
     nextTick(() => {
       // 应用语法高亮
       if (previewRef.value) {
-        const codeBlocks = previewRef.value.querySelectorAll('pre code');
+        const codeBlocks = previewRef.value.querySelectorAll("pre code");
         codeBlocks.forEach((block) => {
-          hljs.highlightElement(block);
+          hljs.highlightElement(block as HTMLElement);
         });
       }
     });
   },
   {
-    immediate: true
-  }
-)
+    immediate: true,
+  },
+);
 // 监听滚动事件
 watch(
   () => previewRef.value,
@@ -98,7 +105,7 @@ watch(
       newValue.addEventListener("scroll", handleScroll);
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
